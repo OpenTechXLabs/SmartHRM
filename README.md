@@ -1,4 +1,4 @@
-# Smart HR Management
+# Smart  HR Management
 
 Smart HR Management is a cloud-based Generative AI powered HR CRM solution designed
 to streamline the recruitment process by automating the generation of
