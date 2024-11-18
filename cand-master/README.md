@@ -1,4 +1,4 @@
-# Candidate Management API
+# Candidate Management  API
 
 This project is a RESTful API built with **FastAPI** for managing candidates, requirements, and clients. It interacts with a **MySQL** database and provides endpoints for creating, retrieving, updating, and deleting candidate records.
 
