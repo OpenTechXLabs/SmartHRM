@@ -15,7 +15,7 @@ from typing import Union
 load_dotenv()
 
 # Initialize FastAPI app
-app = FastAPI()
+app = FastAPI(root_path="/api/requirement-master")
 
 # Add CORS middleware
 app.add_middleware(
@@ -230,5 +230,5 @@ def delete_requirement(rq_id: str):
     return {"message": "Requirement deleted successfully."}
 
 if __name__ == "__main__":
-    port = int(os.getenv("main", 8002)) 
+    port = int(os.getenv("main", 8008)) 
     uvicorn.run(app, host="0.0.0.0", port=port)

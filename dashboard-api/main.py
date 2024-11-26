@@ -85,4 +85,4 @@ def get_summary_counts(
 # Run the application (only if this script is executed directly)
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)  # Adjust the port as necessary
+    uvicorn.run(app, host="0.0.0.0", port=8005)  # Adjust the port as necessary

@@ -14,7 +14,7 @@ from datetime import datetime
 load_dotenv()
 
 # Initialize FastAPI app
-app = FastAPI()
+app = FastAPI(root_path="/api/client-master")
 
 # Add CORS middleware
 app.add_middleware(
@@ -195,6 +195,6 @@ def delete_client(client_id: str):
     return {"message": "Client deleted successfully."}
 
 if __name__ == "__main__":
-    port = int(os.getenv("main", 8001)) 
+    port = int(os.getenv("main", 8009)) 
     uvicorn.run(app, host="0.0.0.0", port=port)
 

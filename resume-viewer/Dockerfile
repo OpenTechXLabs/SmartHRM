@@ -11,7 +11,6 @@ COPY requirements.txt .
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install python-dotenv
 
 # Copy the FastAPI application code into the container
 COPY . .

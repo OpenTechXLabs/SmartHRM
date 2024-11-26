@@ -6,7 +6,6 @@ WORKDIR /app
 
 # Copy the requirements file and environment variable file
 COPY requirements.txt ./
-COPY .env ./
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
@@ -15,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose the port that the app runs on
-EXPOSE 8004
+EXPOSE 8011
 
 # Run the FastAPI app using Uvicorn with auto-reload
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8004", "--reload"] 
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8011", "--reload"] 

@@ -292,4 +292,4 @@ def delete_jd(jd_id: str):
 # Run the application (only if this script is executed directly)
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)

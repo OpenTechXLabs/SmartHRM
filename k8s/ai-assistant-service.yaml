@@ -8,6 +8,6 @@ spec:
     app: jd-upload
   ports:
   - protocol: TCP
-    port: 8002
-    targetPort: 8002
+    port: 8010
+    targetPort: 8010
   type: ClusterIP # Internal communication within the cluster

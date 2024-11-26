@@ -14,3 +14,13 @@ kubectl apply -f resume-upload-deployment.yaml
 kubectl apply -f resume-upload-service.yaml
 kubectl apply -f viewer-deployment.yaml
 kubectl apply -f viewer-service.yaml
+kubectl apply -f candidate-master-deployment.yaml
+kubectl apply -f candidate-master-service.yaml
+kubectl apply -f client-master-deployment.yaml
+kubectl apply -f client-master-service.yaml
+kubectl apply -f intermediate-master-deployment.yaml
+kubectl apply -f intermediate-master-service.yaml
+kubectl apply -f requirements-master-deployment.yaml
+kubectl apply -f requirements-master-service.yaml
+
+

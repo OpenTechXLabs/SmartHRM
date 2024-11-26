@@ -19,7 +19,7 @@ RUN pip install sqlglot==25.24.5
 COPY . .
 
 # Expose the port that the FastAPI app runs on
-EXPOSE 8000
+EXPOSE 8010
 
 # Command to run the application using uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8010"]

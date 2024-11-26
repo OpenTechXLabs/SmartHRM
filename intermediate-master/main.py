@@ -7,16 +7,16 @@ import logging
 
 # Define base backend URLs
 BASE_BACKEND_URLS = {
-    "clients": "http://localhost:8001",  # Client service
-    "requirements": "http://localhost:8002",  # Requirement service
-    "candidates": "http://localhost:8003",  # Candidate service
+    "clients": "http://client-master:8009/api/client-master",  # Client service
+    "requirements": "http://requirement-master:8008/api/requirement-master",  # Requirement service
+    "candidates": "http://candidate-master:8007/api/candidate-master",  # Candidate service
 }
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-intermediate_app = FastAPI()
+intermediate_app = FastAPI(root_path="/api/intermediate-master")
 
 async def forward_request(request: Request, method: str, category: str, backend_path: str):
     backend_url = BASE_BACKEND_URLS.get(category)
@@ -170,5 +170,5 @@ async def delete_candidate(request: Request, cd_id: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 if __name__ == "__main__":
-    port = int(os.getenv("INTERMEDIATE_API_PORT", 8000))  # Default to 8003 if not set
+    port = int(os.getenv("INTERMEDIATE_API_PORT", 8011))  # Default to 8003 if not set
     uvicorn.run(intermediate_app, host="0.0.0.0", port=port)

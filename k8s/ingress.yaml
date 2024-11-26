@@ -1,4 +1,3 @@
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -13,55 +12,89 @@ metadata:
     nginx.ingress.kubernetes.io/cors-allow-headers: "Authorization, Content-Type"
 spec:
   rules:
-    - http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: frontend-service
-                port:
-                  number: 8006
-          - path: /api/resume_s3/
-            pathType: Prefix
-            backend:
-              service:
-                name: resume-s3
-                port:
-                  number: 8000
-          - path: /api/jd_s3/
-            pathType: Prefix
-            backend:
-              service:
-                name: jd-s3
-                port:
-                  number: 8001
-          - path: /api/jd_upload/
-            pathType: Prefix
-            backend:
-              service:
-                name: jd-upload
-                port:
-                  number: 8002
-          - path: /api/resume_upload/
-            pathType: Prefix
-            backend:
-              service:
-                name: resume-upload
-                port:
-                  number: 8003
-          - path: /api/viewer/
-            pathType: Prefix
-            backend:
-              service:
-                name: viewer
-                port:
-                  number: 8004
-          - path: /api/dashboard/
-            pathType: Prefix
-            backend:
-              service:
-                name: dashboard
-                port:
-                  number: 8005
-
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 8006
+      - path: /api/resume_s3/
+        pathType: Prefix
+        backend:
+          service:
+            name: resume-s3
+            port:
+              number: 8000
+      - path: /api/jd_s3/
+        pathType: Prefix
+        backend:
+          service:
+            name: jd-s3
+            port:
+              number: 8001
+      - path: /api/jd_upload/
+        pathType: Prefix
+        backend:
+          service:
+            name: jd-upload
+            port:
+              number: 8002
+      - path: /api/resume_upload/
+        pathType: Prefix
+        backend:
+          service:
+            name: resume-upload
+            port:
+              number: 8003
+      - path: /api/viewer/
+        pathType: Prefix
+        backend:
+          service:
+            name: viewer
+            port:
+              number: 8004
+      - path: /api/dashboard/
+        pathType: Prefix
+        backend:
+          service:
+            name: dashboard
+            port:
+              number: 8005
+      - path: /api/candidate-master/
+        pathType: Prefix
+        backend:
+          service:
+            name: candidate-master
+            port:
+              number: 8007
+      - path: /api/requirement-master/
+        pathType: Prefix
+        backend:
+          service:
+            name: requirement-master
+            port:
+              number: 8008
+      - path: /api/client-master/
+        pathType: Prefix
+        backend:
+          service:
+            name: client-master
+            port:
+              number: 8009
+      - path: /api/ai-assistant/
+        pathType: Prefix
+        backend:
+          service:
+            name: ai-assistant
+            port:
+              number: 8010
+      - path: /api/intermediate-master/
+        pathType: Prefix
+        backend:
+          service:
+            name: intermediate-master
+            port:
+              number: 8011

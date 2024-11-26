@@ -13,7 +13,7 @@ import uvicorn
 load_dotenv()
 
 # Initialize FastAPI app
-app = FastAPI()
+app = FastAPI(root_path="/api/candidate-master")
 
 # Add CORS middleware
 app.add_middleware(
@@ -272,5 +272,5 @@ def delete_candidate(cd_id: str):
     return {"message": "Candidate deleted successfully."}
 
 if __name__ == "__main__":
-    port = int(os.getenv("main", 8003)) 
+    port = int(os.getenv("main", 8007)) 
     uvicorn.run(app, host="0.0.0.0", port=port)

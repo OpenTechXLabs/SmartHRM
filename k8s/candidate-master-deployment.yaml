@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: candidate-master
+  namespace: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: candidate-master
+  template:
+    metadata:
+      labels:
+        app: candidate-master
+    spec:
+      containers:
+      - name: candidate-master
+        imagePullPolicy: Always
+        image: opentechxdoclabs/smart_hr_system:front-end-arm64-v1 # This is the image you built in Minikube
+        ports:
+        - containerPort: 8007
+      imagePullSecrets:
+      - name: docker-registry-secret

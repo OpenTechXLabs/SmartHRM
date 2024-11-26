@@ -7,7 +7,7 @@ from chains import SQLChain
 load_dotenv()
 
 # Initialize FastAPI app
-app = FastAPI(root_path="/api/chanakya_ai")
+app = FastAPI(root_path="/api/ai-assistant")
 
 # Add CORS middleware (for frontend testing, allows requests from any origin)
 app.add_middleware(

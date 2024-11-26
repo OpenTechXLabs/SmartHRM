@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: jd-upload
+  name: client-master
   namespace: prod
 spec:
   selector:
-    app: jd-upload
+    app: client-master
   ports:
   - protocol: TCP
-    port: 8002
-    targetPort: 8002
+    port: 8009
+    targetPort: 8009
   type: ClusterIP # Internal communication within the cluster

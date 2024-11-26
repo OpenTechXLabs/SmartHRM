@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-assistant
+  namespace: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-assistant
+  template:
+    metadata:
+      labels:
+        app: ai-assistant
+    spec:
+      containers:
+      - name: ai-assistant
+        imagePullPolicy: Always
+        image: opentechxdoclabs/smart_hr_system:front-end-arm64-v1 # This is the image you built in Minikube
+        ports:
+        - containerPort: 8010
+      imagePullSecrets:
+      - name: docker-registry-secret
