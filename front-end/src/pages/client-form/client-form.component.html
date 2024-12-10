@@ -115,10 +115,24 @@
       <div class="form-row">
         <mat-form-field appearance="fill" class="form-group">
           <mat-label>Client Notes</mat-label>
-          <textarea matInput rows="3" [(ngModel)]="clients.cl_notes" name="cl_notes"></textarea>
+          <textarea
+            matInput
+            rows="3"
+            [(ngModel)]="clients.cl_notes"
+            name="cl_notes"
+            (input)="checkWordCount()"
+            [attr.maxlength]="maxLength"
+          ></textarea>
+          <mat-error *ngIf="wordCountExceeded">
+            You have exceeded the word limit of 1000 words.
+          </mat-error>
+          <div *ngIf="clients.cl_notes" class="word-count">
+            Word count: {{ currentWordCount }} / 1000
+          </div>
         </mat-form-field>
       </div>
-        <mat-checkbox [(ngModel)]="clients.cl_si_ag" name="cl_si_ag" [disabled]="isSubmitDisabled">
+      
+      <mat-checkbox [(ngModel)]="clients.cl_si_ag" name="cl_si_ag" [disabled]="isSubmitDisabled">
           Agreement signed
         </mat-checkbox>
     
@@ -169,12 +183,21 @@
               placeholder="Enter phone number"
               [(ngModel)]="contact.co_phno"
               name="co_phno_{{ i }}"
-              pattern="^\+?\d{1,4}[\s\-]?\(?\d{1,3}\)?[\s\-]?\d{1,4}[\s\-]?\d{1,4}[\s\-]?\d{1,4}$"
               maxlength="12"
+              #phoneInput="ngModel"
+         
+              pattern="^\+?\d{1,4}[\s\-]?\(?\d{1,3}\)?[\s\-]?\d{1,4}[\s\-]?\d{1,4}[\s\-]?\d{1,4}$"
             />
-            <mat-error *ngIf="clientForm.submitted && !contact.co_phno">Phone number is required and must be valid (12 digits).</mat-error>
+            <mat-error *ngIf="phoneInput.errors?.['pattern']">
+              Invalid phone number format. Please enter a valid phone number (e.g., +123-456-7890).
+            </mat-error>
+            <mat-error *ngIf="phoneInput.errors?.['required']">
+              Phone number is required.
+            </mat-error>
           </mat-form-field>
-
+          
+          
+          
           <mat-form-field appearance="fill" class="form-group">
             <mat-label>Email <span class="required"></span></mat-label>
             <input
@@ -183,10 +206,18 @@
               placeholder="Enter email"
               [(ngModel)]="contact.co_email"
               name="co_email_{{ i }}"
+            
+              pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+              #emailInput="ngModel"
             />
-            <mat-error *ngIf="clientForm.submitted && !contact.co_email">Email is required and must be valid.</mat-error>
-            <mat-error *ngIf="clientForm.submitted && !isValidEmail(contact.co_email)">Please enter a valid email address.</mat-error>
+            <mat-error *ngIf="emailInput.errors?.['required']">
+              Email is required.
+            </mat-error>
+            <mat-error *ngIf="emailInput.errors?.['pattern']">
+              Please enter a valid email address.
+            </mat-error>
           </mat-form-field>
+          
         </div>
       </div>
     </div>
