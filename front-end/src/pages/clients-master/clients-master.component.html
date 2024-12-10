@@ -1,21 +1,34 @@
 <div class="container clients-master-container">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="flex-grow-1 text-center">Clients Master</h4>
-    <button mat-raised-button color="primary" (click)="openAddClientForm()">+ Add Client</button>
+ 
   </div>
   
   <mat-form-field appearance="fill" class="mb-3 w-100">
     <mat-label>Search clients</mat-label>
-    <input matInput 
-           type="text" 
-           [(ngModel)]="searchQuery" 
-           (ngModelChange)="dataSource.filter = $event.trim().toLowerCase()" />
-    <button mat-icon-button *ngIf="searchQuery" (click)="searchQuery = ''">
+    <mat-icon matPrefix>search</mat-icon>
+    <input 
+      matInput 
+      type="text" 
+      [(ngModel)]="searchQuery" 
+      (ngModelChange)="dataSource.filter = $event.trim().toLowerCase()" 
+    />
+    <button 
+      mat-icon-button 
+      matSuffix 
+      *ngIf="searchQuery" 
+      (click)="searchQuery = ''">
       <mat-icon>close</mat-icon>
     </button>
-    <mat-icon matPrefix>search</mat-icon>
   </mat-form-field>
+  
 
+  <div style="display: flex; justify-content: flex-end;">
+    <button mat-raised-button color="primary" (click)="openAddClientForm()">+ Add Client</button>
+  </div>
+  
+ 
+  <br>
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 full-width-table">
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef class="table-header">Name</th>

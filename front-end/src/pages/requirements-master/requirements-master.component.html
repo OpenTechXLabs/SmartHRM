@@ -1,9 +1,7 @@
 <div class="container requirement-master-container">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="text-center flex-grow-1">Requirement Master</h4>
-    <button mat-raised-button color="primary" (click)="addRequirement()">
-      <mat-icon>add</mat-icon> Add Requirement
-    </button>
+    
   </div>
 
   <div class="d-flex align-items-center mt-3">
@@ -18,18 +16,34 @@
       </mat-form-field>
     </div>
 
-    <!-- Search Box -->
-    <div class="flex-grow-2">
-      <mat-form-field appearance="fill" class="w-100">
-        <mat-label>Search here...</mat-label>
-        <mat-icon matPrefix>search</mat-icon>
-        <input matInput [(ngModel)]="searchQuery" (input)="filterRequirements()" />
-        <button mat-icon-button *ngIf="searchQuery" (click)="searchQuery = ''; filterRequirements();">
-          <mat-icon>close</mat-icon>
-        </button>
-      </mat-form-field>
-    </div>
+  <!-- Search Box -->
+<div class="flex-grow-2">
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Search here...</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input 
+      matInput 
+      [(ngModel)]="searchQuery" 
+      (input)="filterRequirements()" 
+    />
+    <button 
+      mat-icon-button 
+      matSuffix 
+      *ngIf="searchQuery" 
+      (click)="searchQuery = ''; filterRequirements();">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+</div>
+
   </div>
+
+  <div style="display: flex; justify-content: flex-end;">
+    <button mat-raised-button color="primary" (click)="addRequirement()">
+      <mat-icon>add</mat-icon> Add Requirement
+    </button>
+  </div>
+  
 
   <br>
 
