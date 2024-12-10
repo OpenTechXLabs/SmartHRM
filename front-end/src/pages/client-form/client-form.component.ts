@@ -64,7 +64,7 @@ export class ClientFormComponent implements OnInit {
     cl_addr: '',
     cl_map_url: '',
     cl_phno: '',
-    cl_si_ag: false, // Initialize as boolean
+    cl_si_ag: false,
     cl_notes: '',
     contacts: [
       { co_name: '', co_position_hr: '', co_phno: '', co_email: '' }
@@ -75,6 +75,7 @@ export class ClientFormComponent implements OnInit {
   submitted: boolean = false; // Initialize as boolean
   formHeading: string = '';
   isSubmitDisabled: boolean = false;
+  formInvalidMessage: string = ''; // Error message variable
 
   constructor(
     public dialogRef: MatDialogRef<ClientFormComponent>,
@@ -127,28 +128,59 @@ export class ClientFormComponent implements OnInit {
 
       // Close the dialog after submission
       this.dialogRef.close(dataToSend);
-    } else {
-      console.log('Form is invalid');
     }
   }
 
   isValidForm(): boolean {
-    // Ensure the form fields are filled before submission
-    return (
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Email format regex
+    const phonePattern = /^\+?\d{1,4}[\s\-]?\(?\d{1,3}\)?[\s\-]?\d{1,4}[\s\-]?\d{1,4}[\s\-]?\d{1,4}$/; // Phone format regex
+
+    const isEmailValid = this.isValidEmail(this.clients.cl_email);
+    const isPhoneValid = this.isValidPhone();
+
+    // Check if all required fields are filled and formats are valid
+    const isFormValid = (
       this.clients.cl_name !== '' &&
       this.clients.cl_email !== '' &&
-      this.clients.cl_phno !== '' 
-      // Checkbox is not mandatory, so no check here
+      this.clients.cl_phno !== '' &&
+      isEmailValid &&
+      isPhoneValid
     );
+
+    if (!isFormValid) {
+      this.formInvalidMessage = 'Please fill all mandatory fields correctly!';
+    } else {
+      this.formInvalidMessage = ''; // Clear error message if valid
+    }
+
+    return isFormValid;
   }
 
+  isValidEmail(email: string): boolean {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    return emailRegex.test(email);
+  }
+  
+  isValidPhone(): boolean {
+    const phoneRegex = /^\+?\d{1,4}[\s\-]?\(?\d{1,3}\)?[\s\-]?\d{1,4}[\s\-]?\d{1,4}[\s\-]?\d{1,4}$/;
+    return phoneRegex.test(this.clients.cl_phno);
+  }
+  
+
   addContactPerson(): void {
-    this.clients.contacts.push({ co_name: '', co_position_hr: '', co_phno: '', co_email: '' });
+    const contactCount = this.clients.contacts.length + 1; // 현재 연락처 수 + 1
+    this.clients.contacts.push({
+      co_name: '', 
+      co_position_hr: '',
+      co_phno: '',
+      co_email: ''
+    });
   }
 
   removeContactPerson(index: number): void {
     if (this.clients.contacts.length > 1) {
       this.clients.contacts.splice(index, 1);
     }
-  }
+}
+
 }

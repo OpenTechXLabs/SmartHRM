@@ -9,7 +9,7 @@ import { ClientWithContacts } from './client.model'; // Import the client model
   providedIn: 'root',
 })
 export class ClientsService {
-  private apiUrl = '/api/client-master/clients'; // FastAPI URL
+  private apiUrl =  '/api/intermediate-master/clients'; 
 
   constructor(private http: HttpClient) {}
 

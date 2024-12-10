@@ -1,5 +1,4 @@
 <div class="form-container mat-elevation-z8">
-  <!-- Toolbar Header -->
   <div class="mat-toolbar mat-toolbar-color-primary add-client-banner">
     <h5>{{ formHeading }}</h5>
     <button mat-icon-button class="close-button" (click)="closeDialog()">
@@ -9,14 +8,12 @@
 
   <br />
 
-  <!-- Company Details Section -->
   <div class="section">
     <h6>Company Details</h6>
     <form #clientForm="ngForm">
       <div class="form-row">
-        <!-- Company Name -->
         <mat-form-field appearance="fill" class="form-group">
-          <mat-label>Company Name</mat-label>
+          <mat-label>Company Name <span class="required"></span></mat-label>
           <input
             matInput
             placeholder="Enter company name"
@@ -27,22 +24,21 @@
           <mat-error *ngIf="clientForm.submitted && !clients.cl_name">Company name is required.</mat-error>
         </mat-form-field>
 
-        <!-- Company Type -->
         <mat-form-field appearance="fill" class="form-group">
-          <mat-label>Company Type</mat-label>
+          <mat-label>Company Type <span class="required"></span></mat-label>
           <mat-select [(ngModel)]="clients.cl_type" name="cl_type">
             <mat-option value="">Select company type</mat-option>
             <mat-option value="service">Service Based</mat-option>
             <mat-option value="product">Product Based</mat-option>
             <mat-option value="both">Both</mat-option>
           </mat-select>
+          <mat-error *ngIf="clientForm.submitted && !clients.cl_type">Company type is required.</mat-error>
         </mat-form-field>
       </div>
 
       <div class="form-row">
-        <!-- Company Email -->
         <mat-form-field appearance="fill" class="form-group">
-          <mat-label>Company Email</mat-label>
+          <mat-label>Company Email <span class="required"></span></mat-label>
           <input
             matInput
             type="email"
@@ -50,14 +46,18 @@
             [(ngModel)]="clients.cl_email"
             name="cl_email"
             required
+            #emailInput="ngModel"
             email
           />
-          <mat-error *ngIf="clientForm.submitted && !clients.cl_email">Please enter a valid email address.</mat-error>
+          <!-- Error message for required email field -->
+          <mat-error *ngIf="emailInput.invalid && (emailInput.dirty || clientForm.submitted)">
+            Please enter a valid email address.
+          </mat-error>
         </mat-form-field>
+        
 
-        <!-- Contact Person Name -->
         <mat-form-field appearance="fill" class="form-group">
-          <mat-label>Contact Person Name</mat-label>
+          <mat-label>Contact Person Name <span class="required"></span></mat-label>
           <input
             matInput
             type="text"
@@ -66,11 +66,11 @@
             name="cl_co_per_name"
             required
           />
+          <mat-error *ngIf="clientForm.submitted && !clients.cl_co_per_name">Contact person name is required.</mat-error>
         </mat-form-field>
       </div>
 
       <div class="form-row">
-        <!-- Address -->
         <mat-form-field appearance="fill" class="form-group">
           <mat-label>Address</mat-label>
           <input
@@ -78,12 +78,10 @@
             placeholder="Enter company address"
             [(ngModel)]="clients.cl_addr"
             name="cl_addr"
-            required
           />
           <mat-error *ngIf="clientForm.submitted && !clients.cl_addr">Address is required.</mat-error>
         </mat-form-field>
 
-        <!-- Map Link -->
         <mat-form-field appearance="fill" class="form-group">
           <mat-label>Map Link</mat-label>
           <input
@@ -91,16 +89,14 @@
             placeholder="Enter map link"
             [(ngModel)]="clients.cl_map_url"
             name="cl_map_url"
-            required
           />
           <mat-error *ngIf="clientForm.submitted && !clients.cl_map_url">Map link is required.</mat-error>
         </mat-form-field>
       </div>
 
       <div class="form-row">
-        <!-- Contact Number -->
         <mat-form-field appearance="fill" class="form-group">
-          <mat-label>Contact Number</mat-label>
+          <mat-label>Contact Number <span class="required"></span></mat-label>
           <input
             matInput
             type="tel"
@@ -108,115 +104,102 @@
             [(ngModel)]="clients.cl_phno"
             name="cl_phno"
             required
-            pattern="^\+?\d{1,4}[\s\-]?\(?\d{1,3}\)?[\s\-]?\d{1,4}[\s\-]?\d{1,4}[\s\-]?\d{1,4}$"
-            maxlength="15"
+            pattern="^\+?\d{10,12}$"
+            #phone="ngModel"
           />
-          <mat-error *ngIf="clientForm.submitted && !clients.cl_phno">Contact number is required and must be valid.</mat-error>
+          <mat-error *ngIf="phone.invalid && phone.touched">Contact number is required.</mat-error>
+          <mat-error *ngIf="phone.errors?.['pattern']">Phone number must be numeric and may include a leading '+' (e.g. +1234567890).</mat-error>
         </mat-form-field>
-        
-      
+      </div>
 
-      <!-- Notes -->
-      <mat-form-field appearance="fill" class="form-group">
-        <mat-label>Client Notes</mat-label>
-        <textarea matInput rows="3" [(ngModel)]="clients.cl_notes" name="cl_notes"></textarea>
-      </mat-form-field>
-
-
-        <!-- Agreement Checkbox -->
+      <div class="form-row">
+        <mat-form-field appearance="fill" class="form-group">
+          <mat-label>Client Notes</mat-label>
+          <textarea matInput rows="3" [(ngModel)]="clients.cl_notes" name="cl_notes"></textarea>
+        </mat-form-field>
+      </div>
         <mat-checkbox [(ngModel)]="clients.cl_si_ag" name="cl_si_ag" [disabled]="isSubmitDisabled">
           Agreement signed
-      </mat-checkbox>      
-      </div>
+        </mat-checkbox>
+    
     </form>
   </div>
 
- <!-- Contact Person Section -->
-<div class="section">
-  <div class="contacts-section">
-    <div class="form-row" >
-      <!-- Contact Persons Heading (Left) -->
-      <h6 style="margin: 0;">Contact Persons</h6>
+  <div class="section">
+    <div class="contacts-section">
+      <div *ngFor="let contact of clients.contacts; let i = index" class="contact-person" style="border: 1px solid #ccc; padding: 16px; margin-bottom: 16px; border-radius: 4px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h6>Other Contact Person {{ i + 1 }}</h6> 
+          <button mat-icon-button color="warn" (click)="removeContactPerson(i)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="fill" class="form-group">
+            <mat-label>Name <span class="required"></span></mat-label>
+            <input
+              matInput
+              [value]="contact.co_name" 
+              placeholder="Enter name"
+              [(ngModel)]="contact.co_name"
+              name="co_name_{{ i }}"
+              
+            />
+            <mat-error *ngIf="clientForm.submitted && !contact.co_name">Name is required.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="form-group">
+            <mat-label>Hiring Position</mat-label>
+            <input
+              matInput
+              placeholder="Enter hiring position"
+              [(ngModel)]="contact.co_position_hr"
+              name="co_position_hr_{{ i }}"
+            />
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="fill" class="form-group">
+            <mat-label>Phone Number <span class="required"></span></mat-label>
+            <input
+              matInput
+              type="tel"
+              placeholder="Enter phone number"
+              [(ngModel)]="contact.co_phno"
+              name="co_phno_{{ i }}"
+              pattern="^\+?\d{1,4}[\s\-]?\(?\d{1,3}\)?[\s\-]?\d{1,4}[\s\-]?\d{1,4}[\s\-]?\d{1,4}$"
+              maxlength="12"
+            />
+            <mat-error *ngIf="clientForm.submitted && !contact.co_phno">Phone number is required and must be valid (12 digits).</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="form-group">
+            <mat-label>Email <span class="required"></span></mat-label>
+            <input
+              matInput
+              type="email"
+              placeholder="Enter email"
+              [(ngModel)]="contact.co_email"
+              name="co_email_{{ i }}"
+            />
+            <mat-error *ngIf="clientForm.submitted && !contact.co_email">Email is required and must be valid.</mat-error>
+            <mat-error *ngIf="clientForm.submitted && !isValidEmail(contact.co_email)">Please enter a valid email address.</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
     </div>
 
-    <div *ngFor="let contact of clients.contacts; let i = index" class="contact-person">
-      <!-- Remove Contact Button -->
-      <button mat-icon-button color="warn" (click)="removeContactPerson(i)">
-        <mat-icon  style="display: flex; margin-right: auto;">delete</mat-icon>
-      </button>
-      
+    <div *ngIf="formInvalidMessage" class="error-message">
+      <span style="color: red;">{{ formInvalidMessage }}</span>
+    </div>
+    <br>
 
-      <div class="form-row">
-        <!-- Name -->
-        <mat-form-field appearance="fill" class="form-group">
-          <mat-label>Name</mat-label>
-          <input
-            matInput
-            placeholder="Enter name"
-            [(ngModel)]="contact.co_name"
-            name="co_name_{{ i }}"
-            required
-          />
-          <mat-error *ngIf="!contact.co_name">Name is required.</mat-error>
-        </mat-form-field>
+    <button mat-raised-button color="primary" (click)="addContactPerson()" style="display: flex; justify-content: flex-start;">Add Contact Person</button>
 
-        <!-- Hiring Position -->
-        <mat-form-field appearance="fill" class="form-group">
-          <mat-label>Hiring Position</mat-label>
-          <input
-            matInput
-            placeholder="Enter hiring position"
-            [(ngModel)]="contact.co_position_hr"
-            name="co_position_hr_{{ i }}"
-          />
-        </mat-form-field>
-      </div>
-
-      <div class="form-row">
-        <!-- Phone Number -->
-        <mat-form-field appearance="fill" class="form-group">
-          <mat-label>Phone Number</mat-label>
-          <input
-            matInput
-            type="tel"
-            placeholder="Enter phone number"
-            [(ngModel)]="contact.co_phno"
-            name="co_phno_{{ i }}"
-            required
-            pattern="^\+?\d{1,4}[\s\-]?\(?\d{1,3}\)?[\s\-]?\d{1,4}[\s\-]?\d{1,4}[\s\-]?\d{1,4}$"
-            maxlength="15"
-          />
-          <mat-error *ngIf="!contact.co_phno">Phone number is required.</mat-error>
-        </mat-form-field>
-
-        <!-- Email -->
-        <mat-form-field appearance="fill" class="form-group">
-          <mat-label>Email</mat-label>
-          <input
-            matInput
-            type="email"
-            placeholder="Enter email"
-            [(ngModel)]="contact.co_email"
-            name="co_email_{{ i }}"
-            required
-            email
-          />
-          <mat-error *ngIf="!contact.co_email">Email is required and must be valid.</mat-error>
-        </mat-form-field>
-      </div>
+    <div class="button-container">
+      <button mat-raised-button color="accent" [disabled]="isSubmitDisabled" (click)="onSubmit()">Submit</button>
     </div>
   </div>
-
-     <!-- Submit Button -->
-
-    <!-- Add Contact Button -->
-    <button mat-raised-button color="primary" (click)="addContactPerson()" style="display: flex; justify-content: flex-end;">Add Contact Person</button>
- 
-    <div class="button-container">
- 
-    <button mat-raised-button color="accent" [disabled]="isSubmitDisabled" (click)="onSubmit()">
-      Submit
-    </button>
-  
-
-    
+</div>
