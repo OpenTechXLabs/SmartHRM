@@ -9,7 +9,7 @@ import { ClientWithContacts } from './client.model'; // Import the client model
   providedIn: 'root',
 })
 export class ClientsService {
-  private apiUrl =  'http://shrs-nlb-c8873bc6e76059c6.elb.ap-south-1.amazonaws.com/api/intermediate-master/clients'; 
+  private apiUrl =  '/api/intermediate-master/clients'; 
 
   constructor(private http: HttpClient) {}
 
