@@ -52,8 +52,8 @@ interface ClientsWithContacts {
     MatCheckboxModule,
     MatCardModule,
     MatDialogModule,
-    MatDividerModule
-  ]
+    MatDividerModule,
+  ],
 })
 export class ClientFormComponent implements OnInit {
   clients: ClientsWithContacts = {
@@ -64,17 +64,23 @@ export class ClientFormComponent implements OnInit {
     cl_addr: '',
     cl_map_url: '',
     cl_phno: '',
-    cl_si_ag: false, // Initialize as boolean
+    cl_si_ag: false,
     cl_notes: '',
-    contacts: [
-      { co_name: '', co_position_hr: '', co_phno: '', co_email: '' }
-    ],
-    formType: 'add'
+    contacts: [{ co_name: '', co_position_hr: '', co_phno: '', co_email: '' }],
+    formType: 'add',
   };
 
   submitted: boolean = false; // Initialize as boolean
   formHeading: string = '';
   isSubmitDisabled: boolean = false;
+  formInvalidMessage: string = ''; // Error message variable
+
+  maxWords = 1000; // Word limit for client notes
+  currentWordCount = 0; // Track current word count
+  wordCountExceeded = false; // Track if word count is exceeded
+maxLength: any;
+  contact: any;
+phoneInput: any;
 
   constructor(
     public dialogRef: MatDialogRef<ClientFormComponent>,
@@ -87,15 +93,15 @@ export class ClientFormComponent implements OnInit {
         this.formHeading = 'Add New Client';
       } else if (this.data.formType === 'update') {
         this.formHeading = 'Edit Client';
-        this.clients = { 
+        this.clients = {
           ...this.data,
-          cl_si_ag: this.data.cl_ag_si === 1 // Convert 0/1 to boolean
+          cl_si_ag: this.data.cl_ag_si === 1, // Convert 0/1 to boolean
         };
       } else if (this.data.formType === 'view') {
         this.formHeading = 'View Client';
-        this.clients = { 
+        this.clients = {
           ...this.data,
-          cl_si_ag: this.data.cl_ag_si === 1 // Convert 0/1 to boolean
+          cl_si_ag: this.data.cl_ag_si === 1, // Convert 0/1 to boolean
         };
         this.isSubmitDisabled = true; // Disable submission for 'view' mode
       }
@@ -110,40 +116,78 @@ export class ClientFormComponent implements OnInit {
     this.submitted = true;
 
     if (this.isValidForm()) {
-      // Prepare the data to send to the backend
       const dataToSend = {
         ...this.clients,
-        cl_ag_si: this.clients.cl_si_ag ? 1 : 0 // Convert boolean to 1 or 0
+        cl_ag_si: this.clients.cl_si_ag ? 1 : 0, // Convert boolean to 1 or 0
       };
 
-      // Handle form submission (e.g., API call)
       if (this.clients.formType === 'add') {
         console.log('Client added:', dataToSend);
-        // Call API to add the client
       } else if (this.clients.formType === 'update') {
         console.log('Client updated:', dataToSend);
-        // Call API to update the client
       }
 
-      // Close the dialog after submission
       this.dialogRef.close(dataToSend);
-    } else {
-      console.log('Form is invalid');
     }
   }
 
   isValidForm(): boolean {
-    // Ensure the form fields are filled before submission
-    return (
+    const isEmailValid = this.isValidEmail(this.clients.cl_email);
+    const isPhoneValid = this.isValidPhone();
+
+    const isFormValid =
       this.clients.cl_name !== '' &&
       this.clients.cl_email !== '' &&
-      this.clients.cl_phno !== '' 
-      // Checkbox is not mandatory, so no check here
-    );
+      this.clients.cl_phno !== '' &&
+      isEmailValid &&
+      isPhoneValid &&
+      !this.wordCountExceeded;
+
+    if (!isFormValid) {
+      this.formInvalidMessage = 'Please fill all mandatory fields correctly!';
+    } else {
+      this.formInvalidMessage = '';
+    }
+
+    return isFormValid;
+  }
+
+  isValidEmail(email: string): boolean {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  }
+
+  isValidPhone(): boolean {
+    const phoneRegex = /^\+?\d{1,4}[\s\-]?\(?\d{1,3}\)?[\s\-]?\d{1,4}[\s\-]?\d{1,4}[\s\-]?\d{1,4}$/;
+    return phoneRegex.test(this.clients.cl_phno);
+  }
+
+  isPhoneValid(phone: string): boolean {
+    const phoneRegex = /^\+?\d{1,4}[\s\-]?\(?\d{1,3}\)?[\s\-]?\d{1,4}[\s\-]?\d{1,4}[\s\-]?\d{1,4}$/;
+    return phoneRegex.test(this.contact.co_phno);
+  }
+  
+
+  checkWordCount(): void {
+    const words = this.clients.cl_notes.trim().split(/\s+/);
+    this.currentWordCount = words.length;
+
+    this.wordCountExceeded = this.currentWordCount > this.maxWords;
+    if (this.wordCountExceeded) {
+      this.clients.cl_notes = this.clients.cl_notes.substring(
+        0,
+        this.clients.cl_notes.lastIndexOf(' ')
+      );
+    }
   }
 
   addContactPerson(): void {
-    this.clients.contacts.push({ co_name: '', co_position_hr: '', co_phno: '', co_email: '' });
+    this.clients.contacts.push({
+      co_name: '',
+      co_position_hr: '',
+      co_phno: '',
+      co_email: '',
+    });
   }
 
   removeContactPerson(index: number): void {
