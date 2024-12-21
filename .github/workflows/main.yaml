@@ -1,8 +1,8 @@
-name: HRM CI/CD pipeline
+name: SmartHRM CI/CD pipeline
 on:
   push:
     branches:
-    - release-mvp-0.6-123 # Trigger only on the release branch
+    - release-mvp-0.6 # Update the branch accordingly
   workflow_dispatch:
     # Enable manual triggering
 
@@ -11,71 +11,95 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     strategy:
+      max-parallel: 6
       matrix:
         service:
-        - front-end # Add all microservice folder
+        # microservice folder add/remove accordingly
+        - client-master
+        - candidate-master
+        - requirement-master
+        - intermediate-master
+    
     steps:
-    # Step 1: Set up QEMU to enable cross-platform builds
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-
-    # Step 2: Set up Docker Buildx (for multi-architecture builds)
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
-    # Step 3: Checkout Code
+    # Checkout Code
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
-    # Step 4: Login to Docker Hub
+    # Detect Changes in Service Folder
+    - name: Check if folder changed for ${{ matrix.service }}
+      id: folder-check
+      run: |
+        if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q "^${{ matrix.service }}/"; then
+          echo "changes=true" >> $GITHUB_ENV
+        else
+          echo "changes=false" >> $GITHUB_ENV
+        fi
+    # Skip job if no changes
+    - name: Skip if no changes
+      if: env.changes == 'false'
+      run: echo "No changes in ${{ matrix.service }}. Skipping build and deploy."
+
+    # Set up QEMU to enable cross-platform builds
+    - name: Set up QEMU
+      if: env.changes == 'true'
+      uses: docker/setup-qemu-action@v3
+
+    # Set up Docker Buildx (for multi-architecture)
+    - name: Set up Docker Buildx
+      if: env.changes == 'true'
+      uses: docker/setup-buildx-action@v3
+
+    # Login to Docker Hub
     - name: Login to Docker Hub
+      if: env.changes == 'true'
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    # Step 5: Build Docker Image for ${{ matrix.service }}
+    # Build Docker Image for ${{ matrix.service }}
     - name: Build Docker Image for ${{ matrix.service }}
+      if: env.changes == 'true'
       run: |
         cd ${{ matrix.service }}
-        docker buildx build --platform linux/arm64 -t tracktwok/smart_hr_system:${{ matrix.service }} --push .
-  # deploy-on-ec2:
-  #   needs: image-build
-  #   runs-on: ubuntu-latest
-  #   environment: dev
-  #   strategy:
-  #     matrix:
-  #       service:
-  #       - client-master # Match the services from the build job
-  #   steps:
-  #   # Step 1: Set up SSH to connect to the EC2 instance
-  #   - name: Setup SSH
-  #     uses: webfactory/ssh-agent@v0.5.3
-  #     with:
-  #       ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+        docker buildx build --platform linux/arm64 -t ${{ secrets.DOCKER_USERNAME }}/smart_hr_system:${{ matrix.service }} --push .
+          
+  deploy:
+    needs: image-build
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      id-token: write   # Required for OIDC
+      contents: read    # Required to checkout code        
+    strategy:
+      max-parallel: 1
+      matrix:
+        service:
+        - client-master
+        - candidate-master
+        - requirement-master
+        - intermediate-master
+    
+    steps:
+      - name: Checkout Repository
+        if: env.changes == 'true'
+        uses: actions/checkout@v4
+    
+      - name: Configure AWS Credentials
+        if: env.changes == 'true'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-aws-oidc-role
+          aws-region: us-east-1
 
-  #   # Step 2: Deploy to EC2
-  #   - name: Deploy Docker Containers on EC2
-  #     env:
-  #       SERVICE: ${{ matrix.service }}
-  #     run: |
-  #       ssh -o StrictHostKeyChecking=no \
-  #       ubuntu@${{ secrets.EC2_HOST }} \
-  #       "bash -c '
-  #       export SERVICE=\"$SERVICE\"
-  #       echo \"Remote SERVICE value: \$SERVICE\" 
-
-  #       if [ -z \"\$SERVICE\" ]; then 
-  #         echo \"Error: SERVICE variable is not set\"; 
-  #         exit 1; 
-  #       fi
-
-  #       # Pull the latest Docker image
-  #       docker pull tracktwok/smart_hr_system:\"\$SERVICE\"
-
-  #       # Stop and remove any existing container
-  #       docker rm -f \"\$SERVICE\" || true
-
-  #       # Run the container
-  #       docker run -d --name \"\$SERVICE\" -p 8009:8009 tracktwok/smart_hr_system:\"\$SERVICE\"
-  #       '"
+      - name: Run commands via SSM
+        if: env.changes == 'true'
+        run: |
+          INSTANCE_ID="i-0f860a183c355edb9" 
+          # Send SSM Command to perform a rollout-restart
+          aws ssm send-command \
+            --instance-ids $INSTANCE_ID \
+            --document-name "kubectl-command-execute" \
+            --parameters 'commands=["/home/ssm-user/${{matrix.service}}.sh"]'
