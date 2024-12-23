@@ -3,6 +3,9 @@ on:
   push:
     branches:
     - release-mvp-0.6 # Update the branch accordingly
+  pull_request:
+    branches: 
+    - release-mvp-0.6 # Update the branch accordingly
   workflow_dispatch:
     # Enable manual triggering
 
@@ -97,7 +100,7 @@ jobs:
       - name: Run commands via SSM
         if: env.changes == 'true'
         run: |
-          INSTANCE_ID="i-0f860a183c355edb9" 
+          INSTANCE_ID="${{ vars.EC2_INSTANCE_ID }}" 
           # Send SSM Command to perform a rollout-restart
           aws ssm send-command \
             --instance-ids $INSTANCE_ID \
