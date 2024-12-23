@@ -3,9 +3,6 @@ on:
   push:
     branches:
     - release-mvp-0.6 # Update the branch accordingly
-  pull_request:
-    branches: 
-    - release-mvp-0.6 # Update the branch accordingly
   workflow_dispatch:
     # Enable manual triggering
 
